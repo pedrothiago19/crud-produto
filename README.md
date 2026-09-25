@@ -54,6 +54,7 @@ mini-sistema-produtos/
 ├── config/
 ├── controllers/
 ├── database/
+├── docs/
 ├── pages/
 ├── index.php
 ├── logout.php
@@ -80,32 +81,21 @@ CESTAS 1 ----- N CESTA_PRODUTOS N ----- 1 PRODUTOS
 
 ### DER
 
-Para a entrega, exporte o DER feito no MySQL Workbench e substitua a seção abaixo pela imagem:
-
-`docs/der.png`
-
-> Observação: o arquivo `database/schema.sql` contém todas as tabelas e campos necessários para reproduzir a modelagem.
+![Diagrama Entidade-Relacionamento](docs/der.png)
 
 ## Protótipo Figma
 
-Para a Etapa 1, crie os frames no Figma e coloque a imagem ou link de compartilhamento nesta seção.
-
-Sugestão de telas:
-
-1. Login
-2. Cadastro
-3. Dashboard
-4. Produtos
-5. Fornecedores
-6. Gerenciamento AJAX
-7. Seleção de produtos
-8. Minha Cesta
-
-Exemplo de inclusão de imagem no README:
-
-```md
 ![Protótipo Figma](docs/figma-telas.png)
-```
+
+* Login;
+* Cadastro de usuário;
+* Dashboard;
+* Cadastro e gerenciamento de produtos;
+* Cadastro e gerenciamento de fornecedores;
+* Área de gerenciamento via AJAX;
+* Seleção de produtos;
+* Cesta de compras.
+
 
 ## AJAX
 
@@ -127,47 +117,26 @@ O cadastro/exclusão é processado sem envio tradicional de formulário e a inte
 - Chaves estrangeiras para manter integridade relacional.
 - Restrição `UNIQUE (cesta_id, produto_id)` para impedir duplicidade do mesmo produto na cesta.
 
-## Git
-
-É recomendado criar commits a cada alteração relevante e utilizar mensagens claras. Exemplos:
-
-```text
-feat: cria estrutura inicial do projeto
-feat: implementa conexão PDO
-feat: adiciona criação automática do banco
-feat: implementa cadastro de usuários
-feat: implementa autenticação
-feat: adiciona cadastro de fornecedores
-feat: adiciona cadastro de produtos
-feat: implementa relacionamento produto-fornecedor
-feat: implementa gerenciamento via AJAX
-feat: implementa cesta de compras
-docs: adiciona DER e protótipos do Figma
-docs: adiciona documentação do projeto
-style: ajusta interface com Bootstrap
-```
-
 ## Observação sobre o enunciado
 
-O texto do enunciado menciona **SHA254**. O algoritmo padronizado utilizado neste projeto é **SHA-256** (`hash('sha256', ...)`).
-
-> Para aplicações reais, o recomendado é usar `password_hash()`/`password_verify()` para senhas. Neste trabalho, foi seguido o requisito acadêmico de SHA-256.
+O algoritmo padronizado utilizado neste projeto é **SHA-256** (`hash('sha256', ...)`).
 
 ## Equipe
 
-Preencha aqui os nomes e matrículas dos integrantes antes de entregar.
+## Gustavo Luan Cavalini Santos - 60006913
+## Pedro Thiago Napoleão - 60007104
 
 ## Checklist de entrega
 
-- [ ] Protótipos do Figma anexados ao README
-- [ ] DER exportado e anexado ao README
-- [ ] Banco e tabelas criados automaticamente
-- [ ] Cadastro de usuário funcionando
-- [ ] Login/logout funcionando
-- [ ] Produtos funcionando
-- [ ] Fornecedores funcionando
-- [ ] AJAX funcionando
-- [ ] Cesta funcionando
-- [ ] Resumo da cesta funcionando
-- [ ] Repositório Git atualizado
-- [ ] Todos os integrantes com commits
+- [x] Protótipos do Figma anexados ao README
+- [x] DER exportado e anexado ao README
+- [x] Banco e tabelas criados automaticamente
+- [x] Cadastro de usuário funcionando
+- [x] Login/logout funcionando
+- [x] Produtos funcionando
+- [x] Fornecedores funcionando
+- [x] AJAX funcionando
+- [x] Cesta funcionando
+- [x] Resumo da cesta funcionando
+- [x] Repositório Git atualizado
+- [x] Todos os integrantes com commits

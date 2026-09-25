@@ -4,6 +4,7 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/helpers.php';
 exigirLogin();
+
 try {
     $pdo=Database::getConnection();
     $usuarios=$pdo->query('SELECT id,nome,email,created_at FROM usuarios ORDER BY id DESC')->fetchAll();

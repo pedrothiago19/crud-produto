@@ -1,7 +1,15 @@
-# Arquivos de documentação
+# Documentação do Projeto
 
-Coloque nesta pasta os arquivos exportados do Figma e do MySQL Workbench antes da entrega.
+Esta pasta contém os documentos utilizados nas etapas de análise e modelagem do sistema.
 
-Sugestão:
-- `figma-telas.png` — protótipos
-- `der.png` — Diagrama Entidade-Relacionamento
+## Protótipo Figma
+
+`figma-telas.png`
+
+Contém os protótipos das principais telas do sistema desenvolvidos no Figma.
+
+## Diagrama Entidade-Relacionamento
+
+`der.png`
+
+Contém o DER desenvolvido no MySQL Workbench, apresentando as tabelas, campos, chaves e relacionamentos do sistema.

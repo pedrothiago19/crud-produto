@@ -1,21 +1,440 @@
 <?php
+
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../classes/Produto.php';
 require_once __DIR__ . '/../classes/Fornecedor.php';
 require_once __DIR__ . '/../classes/Cesta.php';
 require_once __DIR__ . '/../config/helpers.php';
-$titulo='Produtos'; require_once __DIR__ . '/header.php';
-$pdo=Database::getConnection(); $produto=new Produto($pdo); $fornecedor=new Fornecedor($pdo); $cesta=new Cesta($pdo);
-$erro='';$sucesso='';
-if($_SERVER['REQUEST_METHOD']==='POST') { try { $nome=trim($_POST['nome']??'');$descricao=trim($_POST['descricao']??'');$precoValor=(float)str_replace(',','.',$_POST['preco']??0);$fornecedorId=(int)($_POST['fornecedor_id']??0); if($nome===''||$precoValor<0||$fornecedorId<=0) throw new Exception('Preencha nome, preço e fornecedor corretamente.'); $produto->criar($nome,$descricao,$precoValor,$fornecedorId);$sucesso='Produto cadastrado com sucesso.';}catch(Throwable $e){$erro=$e->getMessage();}}
-if(isset($_GET['excluir'])){try{$produto->excluir((int)$_GET['excluir']);$sucesso='Produto excluído com sucesso.';}catch(Throwable $e){$erro=$e->getMessage();}}
-$produtos=$produto->listar();$fornecedores=$fornecedor->listar();$itensCesta=$cesta->listarPorUsuario(usuarioId());$idsCesta=array_map(fn($i)=>(int)$i['id'],$itensCesta);
+
+$titulo = 'Produtos';
+
+require_once __DIR__ . '/header.php';
+
+$pdo = Database::getConnection();
+
+$produto = new Produto($pdo);
+$fornecedor = new Fornecedor($pdo);
+$cesta = new Cesta($pdo);
+
+$erro = '';
+$sucesso = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    try {
+
+        $nome = trim($_POST['nome'] ?? '');
+        $descricao = trim($_POST['descricao'] ?? '');
+
+        $precoValor = (float) str_replace(
+            ',',
+            '.',
+            $_POST['preco'] ?? 0
+        );
+
+        $fornecedorId = (int) ($_POST['fornecedor_id'] ?? 0);
+
+        if (
+            $nome === '' ||
+            $precoValor < 0 ||
+            $fornecedorId <= 0
+        ) {
+            throw new Exception(
+                'Preencha nome, preço e fornecedor corretamente.'
+            );
+        }
+
+        $produto->criar(
+            $nome,
+            $descricao,
+            $precoValor,
+            $fornecedorId
+        );
+
+        $sucesso = 'Produto cadastrado com sucesso.';
+
+    } catch (Throwable $e) {
+
+        $erro = $e->getMessage();
+    }
+}
+
+if (isset($_GET['excluir'])) {
+
+    try {
+
+        $produto->excluir(
+            (int) $_GET['excluir']
+        );
+
+        $sucesso = 'Produto excluído com sucesso.';
+
+    } catch (Throwable $e) {
+
+        $erro = $e->getMessage();
+    }
+}
+
+$produtos = $produto->listar();
+$fornecedores = $fornecedor->listar();
+
+$itensCesta = $cesta->listarPorUsuario(
+    usuarioId()
+);
+
+$idsCesta = array_map(
+    fn($i) => (int) $i['id'],
+    $itensCesta
+);
+
 ?>
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4"><div><h1 class="h2 fw-bold">Produtos</h1><p class="text-secondary mb-0">Selecione uma unidade de cada produto para adicionar à cesta.</p></div><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProduto">Novo produto</button></div>
-<?php if($erro):?><div class="alert alert-danger"><?=e($erro)?></div><?php endif;?><?php if($sucesso):?><div class="alert alert-success"><?=e($sucesso)?></div><?php endif;?>
-<form method="post" action="../ajax/cesta.php" id="formCesta"><div class="card border-0 shadow-sm"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th style="width:60px"></th><th>Produto</th><th>Fornecedor</th><th>Descrição</th><th>Preço</th><th></th></tr></thead><tbody>
-<?php foreach($produtos as $p): $jaIn = in_array((int)$p['id'], $idsCesta, true); ?><tr><td><input class="form-check-input produto-check" type="checkbox" name="produtos[]" value="<?=e($p['id'])?>" <?=in_array((int)$p['id'],$idsCesta,true)?'disabled':''?>></td><td class="fw-semibold"><?=e($p['nome'])?></td><td><span class="badge text-bg-light border"><?=e($p['fornecedor_nome'])?></span></td><td class="text-secondary"><?=e($p['descricao'] ?: 'Sem descrição')?></td><td class="fw-semibold"><?=preco($p['preco'])?></td><td><?php if($jaIn):?><span class="badge text-bg-success">Na cesta</span><?php endif;?></td></tr><?php endforeach;?>
-<?php if(!$produtos):?><tr><td colspan="6" class="text-center py-5 text-secondary">Nenhum produto cadastrado.</td></tr><?php endif;?></tbody></table></div></div><div class="card-footer bg-white d-flex justify-content-between align-items-center"><span id="contadorSelecionados" class="text-secondary">0 produto(s) selecionado(s)</span><button type="submit" class="btn btn-primary" id="btnCesta" disabled>Adicionar à Cesta</button></div></div></form>
-<div class="modal fade" id="modalProduto" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><form method="post"><div class="modal-header"><h5 class="modal-title">Novo produto</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="mb-3"><label class="form-label">Nome</label><input name="nome" class="form-control" required></div><div class="mb-3"><label class="form-label">Descrição</label><textarea name="descricao" class="form-control" rows="3"></textarea></div><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Preço</label><input name="preco" type="number" step="0.01" min="0" class="form-control" required></div><div class="col-md-6 mb-3"><label class="form-label">Fornecedor</label><select name="fornecedor_id" class="form-select" required><option value="">Selecione</option><?php foreach($fornecedores as $f):?><option value="<?=$f['id']?>"><?=e($f['nome'])?></option><?php endforeach;?></select></div></div></div><div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary">Cadastrar</button></div></form></div></div></div>
-<script>const checks=[...document.querySelectorAll('.produto-check')],counter=document.getElementById('contadorSelecionados'),button=document.getElementById('btnCesta');function atualiza(){const n=checks.filter(c=>c.checked).length;counter.textContent=n+' produto(s) selecionado(s)';button.disabled=n===0;}checks.forEach(c=>c.addEventListener('change',atualiza));</script>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+
+    <div>
+
+        <h1 class="h2 fw-bold">
+            Produtos
+        </h1>
+
+        <p class="text-secondary mb-0">
+            Selecione uma unidade de cada produto para adicionar à cesta.
+        </p>
+
+    </div>
+
+    <button
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#modalProduto"
+    >
+        Novo produto
+    </button>
+
+</div>
+
+<?php if ($erro): ?>
+
+    <div class="alert alert-danger">
+        <?= e($erro) ?>
+    </div>
+
+<?php endif; ?>
+
+<?php if ($sucesso): ?>
+
+    <div class="alert alert-success">
+        <?= e($sucesso) ?>
+    </div>
+
+<?php endif; ?>
+
+<form
+    method="post"
+    action="../ajax/cesta.php"
+    id="formCesta"
+>
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th style="width:60px"></th>
+                            <th>Produto</th>
+                            <th>Fornecedor</th>
+                            <th>Descrição</th>
+                            <th>Preço</th>
+                            <th></th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <?php foreach ($produtos as $p): ?>
+
+                            <?php
+                            $jaIn = in_array(
+                                (int) $p['id'],
+                                $idsCesta,
+                                true
+                            );
+                            ?>
+
+                            <tr>
+
+                                <td>
+
+                                    <input
+                                        class="form-check-input produto-check"
+                                        type="checkbox"
+                                        name="produtos[]"
+                                        value="<?= e($p['id']) ?>"
+                                        <?= in_array(
+                                            (int) $p['id'],
+                                            $idsCesta,
+                                            true
+                                        ) ? 'disabled' : '' ?>
+                                    >
+
+                                </td>
+
+                                <td class="fw-semibold">
+                                    <?= e($p['nome']) ?>
+                                </td>
+
+                                <td>
+
+                                    <span class="badge text-bg-light border">
+                                        <?= e($p['fornecedor_nome']) ?>
+                                    </span>
+
+                                </td>
+
+                                <td class="text-secondary">
+                                    <?= e($p['descricao'] ?: 'Sem descrição') ?>
+                                </td>
+
+                                <td class="fw-semibold">
+                                    <?= preco($p['preco']) ?>
+                                </td>
+
+                                <td>
+
+                                    <?php if ($jaIn): ?>
+
+                                        <span class="badge text-bg-success">
+                                            Na cesta
+                                        </span>
+
+                                    <?php endif; ?>
+
+                                </td>
+
+                            </tr>
+
+                        <?php endforeach; ?>
+
+                        <?php if (!$produtos): ?>
+
+                            <tr>
+
+                                <td
+                                    colspan="6"
+                                    class="text-center py-5 text-secondary"
+                                >
+                                    Nenhum produto cadastrado.
+                                </td>
+
+                            </tr>
+
+                        <?php endif; ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            <span
+                id="contadorSelecionados"
+                class="text-secondary"
+            >
+                0 produto(s) selecionado(s)
+            </span>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                id="btnCesta"
+                disabled
+            >
+                Adicionar à Cesta
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
+
+<div
+    class="modal fade"
+    id="modalProduto"
+    tabindex="-1"
+>
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <form method="post">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Novo produto
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                    ></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Nome
+                        </label>
+
+                        <input
+                            name="nome"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Descrição
+                        </label>
+
+                        <textarea
+                            name="descricao"
+                            class="form-control"
+                            rows="3"
+                        ></textarea>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Preço
+                            </label>
+
+                            <input
+                                name="preco"
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Fornecedor
+                            </label>
+
+                            <select
+                                name="fornecedor_id"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                                <?php foreach ($fornecedores as $f): ?>
+
+                                    <option value="<?= $f['id'] ?>">
+                                        <?= e($f['nome']) ?>
+                                    </option>
+
+                                <?php endforeach; ?>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button class="btn btn-primary">
+                        Cadastrar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const checks = [
+    ...document.querySelectorAll('.produto-check')
+];
+
+const counter = document.getElementById(
+    'contadorSelecionados'
+);
+
+const button = document.getElementById(
+    'btnCesta'
+);
+
+function atualiza() {
+
+    const n = checks.filter(
+        c => c.checked
+    ).length;
+
+    counter.textContent =
+        n + ' produto(s) selecionado(s)';
+
+    button.disabled = n === 0;
+}
+
+checks.forEach(
+    c => c.addEventListener(
+        'change',
+        atualiza
+    )
+);
+
+</script>
+
 <?php require_once __DIR__ . '/footer.php'; ?>
