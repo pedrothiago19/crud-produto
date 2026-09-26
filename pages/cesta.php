@@ -46,7 +46,7 @@ if (isset($_GET['limpar'])) {
         </h1>
 
         <p class="text-secondary mb-0">
-            Cada produto aparece apenas uma vez, conforme solicitado no trabalho.
+            Cada produto aparece apenas uma vez.
         </p>
 
     </div>

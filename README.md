@@ -85,7 +85,14 @@ CESTAS 1 ----- N CESTA_PRODUTOS N ----- 1 PRODUTOS
 
 ## Protótipo Figma
 
-![Protótipo Figma](docs/figma-telas.png)
+![Login](docs/login.png)
+![Cadastro](docs/cadastro.png)
+![Dashboard](docs/dashboard.png)
+![Produtos](docs/produtos.png)
+![Fornecedores](docs/fornecedores.png)
+![Gerenciamento AJAX](docs/gerenciamento-ajax.png)
+![Cesta](docs/cesta.png)
+
 
 * Login;
 * Cadastro de usuário;

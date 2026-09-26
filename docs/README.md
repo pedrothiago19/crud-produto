@@ -4,7 +4,13 @@ Esta pasta contém os documentos utilizados nas etapas de análise e modelagem d
 
 ## Protótipo Figma
 
-`figma-telas.png`
+`login.png`
+`cadastro.png`
+`dashboard.png`
+`produtos.png`
+`fornecedores.png`
+`gerenciamento-ajax.png`
+`cesta.png`
 
 Contém os protótipos das principais telas do sistema desenvolvidos no Figma.
 
